@@ -1,2 +1,2 @@
-# Google-QUEST-Q-A-Labelling
+# Google-QUEST-Q-A-Labeling
 Featured kaggle competition
