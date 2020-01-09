@@ -1,0 +1,23 @@
+// {type:state}
+// {generate:true}
+
+(start)_Start kernel->(Kernel is running)
+
+(Kernel is running)Stop kernel->(end)
+(Kernel is running)__Reload kernel->(start)
+(Kernel is running)Set up env->(Retrieve)
+
+(Retrieve)___Import modules->(EDA)
+(Retrieve)___Reading Data->(EDA)
+
+(EDA)____Data Description->(FE)
+(EDA)____Host Distribution Visualization->(FE)
+(EDA)____Categories Distribution->(FE)
+(EDA)____Common features->(FE)
+(EDA)____Length of contents->(FE)
+(EDA)____Most popular questions->(FE)
+
+(FE)___Cleaning->(Modelling)
+(FE)___Vectorization->(Modelling)
+
+(Modelling)->(end)
