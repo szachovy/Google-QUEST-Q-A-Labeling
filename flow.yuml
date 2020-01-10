@@ -2,10 +2,7 @@
 // {generate:true}
 
 (start)_Start kernel->(Kernel is running)
-
-(Kernel is running)Stop kernel->(end)
-(Kernel is running)__Reload kernel->(start)
-(Kernel is running)Set up env->(Retrieve)
+(Kernel is running)_Set up env->(Retrieve)
 
 (Retrieve)___Import modules->(EDA)
 (Retrieve)___Reading Data->(EDA)
@@ -19,5 +16,8 @@
 
 (FE)___Cleaning->(Modelling)
 (FE)___Vectorization->(Modelling)
+(FE)___Word Embedding->(Modelling)
 
-(Modelling)->(end)
+(Modelling)___Deep RNN with LSTM blocks->(Deployment)
+
+(Deployment)->(end)
