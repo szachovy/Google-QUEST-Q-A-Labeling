@@ -8,6 +8,8 @@ import plotly.express as px
 from matplotlib_venn import venn2
 
 import xml.etree.ElementTree as ET
+import json 
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
@@ -69,4 +71,25 @@ class Analysis(object):
         plt.title(title)
         plt.show()
 
+
+class Feature_Extraction(object):
+    '''
+    Helper class used for Feature engineering purposes.
+    
+    '''
+    def __init__(self, dataframe):
+        self.dataframe = dataframe
+
+    def unconstrained_chars(self):
+        pass
+
+    def shortcuts_removal(self):
         
+        pass
+
+    def lower_case(self):
+        self.dataframe[column] = self.dataframe[column].str.lower()
+
+
+
+    
