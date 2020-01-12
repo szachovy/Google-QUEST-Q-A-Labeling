@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 import json 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-
+from sklearn.decomposition import TruncatedSVD
 
 class Parser(object):
     '''
@@ -71,25 +71,50 @@ class Analysis(object):
         plt.title(title)
         plt.show()
 
-
-class Feature_Extraction(object):
+class Feature_Engineering(object):
     '''
     Helper class used for Feature engineering purposes.
     
     '''
     def __init__(self, dataframe):
         self.dataframe = dataframe
-
-    def unconstrained_chars(self):
-        pass
-
-    def shortcuts_removal(self):
+        with open("src/charset.json") as json_file:
+            self.charset  = json.load(json_file)
         
-        pass
+        self.vectorizer = TfidfVectorizer(ngram_range=(1, 3))
+        self.tsvd = TruncatedSVD(n_components = 1, n_iter=5)
+        
 
-    def lower_case(self):
-        self.dataframe[column] = self.dataframe[column].str.lower()
 
+    def unconstrained_chars(self, column, index):
+        return self.dataframe[column][index].replace(''.join(self.charset['CHARS']), '')
 
+    def shortcuts_removal(self, column, index):
+        return ' '.join(list(map(lambda word: self.find_and_replace(word), self.dataframe[column][index].split())))
+        
+    def lower_case(self, column):
+        return self.dataframe[column].str.lower()
+        
+    
+    def find_and_replace(self, word):
+        for key, value in self.charset['SHORTCUTS'].items():
+            if key == word:
+                return value
+        return word
+
+    def flow(self, column):
+        self.dataframe[column] = self.lower_case(column)
+        for index in range(self.dataframe[column].shape[0]):
+            self.dataframe[column][index] = self.unconstrained_chars(column, index)
+            self.dataframe[column][index] = self.shortcuts_removal(column, index)
+
+        return self.dataframe[column]
+    
+    def tfidf_vec(self, column):
+        return np.array(self.tsvd.fit_transform(self.vectorizer.fit_transform(self.dataframe[column].values)))
+    
+    def dummies_encoding(self, column):
+        return pd.get_dummies(self.dataframe[column])
+            
 
     

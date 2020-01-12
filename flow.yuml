@@ -15,14 +15,15 @@
 (EDA)____Most popular questions->(FE)
 
 (FE)___Cleaning->(Modelling)
-(FE)___Vectorization->(Modelling)
-(FE)___Word Embedding using TF-IDF->(Modelling)
-(FE)___Debiasing word embeddings->(Modelling)
+(FE)___Dummies->(Modelling)
+(FE)___TF-IDF with SVD->(Modelling)
+(FE)___Vectorization with BERT->(Modelling)
 
 (Modelling)___Deep RNN with LSTM blocks->(Deployment)
 (Modelling)___RNN for sentiment classification->(Deployment)
 
 (Deployment)__Fitting->(Feedback)
+(Deployment)__Spearman Callback->(Feedback)
 (Deployment)__Submission->(Feedback)
 
 (Feedback)__Metrics->(end)
