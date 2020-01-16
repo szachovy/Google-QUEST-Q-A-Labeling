@@ -20,10 +20,9 @@
 (FE)___Vectorization with BERT->(Modelling)
 
 (Modelling)___Deep RNN with LSTM blocks->(Deployment)
-(Modelling)___RNN for sentiment classification->(Deployment)
+(Modelling)___Spearman Callback->(Deployment)
 
 (Deployment)__Fitting->(Feedback)
-(Deployment)__Spearman Callback->(Feedback)
 (Deployment)__Submission->(Feedback)
 
 (Feedback)__Metrics->(end)

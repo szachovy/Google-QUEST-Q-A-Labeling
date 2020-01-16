@@ -13,6 +13,10 @@ import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 
+import torch
+from transformers import DistilBertTokenizer, DistilBertModel
+
+
 class Parser(object):
     '''
     Parse config.xml file.
@@ -82,12 +86,19 @@ class Feature_Engineering(object):
             self.charset  = json.load(json_file)
         
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 3))
-        self.tsvd = TruncatedSVD(n_components = 1, n_iter=5)
+        # change number of compoments
+        self.tsvd = TruncatedSVD(n_components = 128, n_iter=5)
+        
+        self.tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+        self.model = DistilBertModel.from_pretrained('distilbert-base-uncased')
         
 
 
     def unconstrained_chars(self, column, index):
-        return self.dataframe[column][index].replace(''.join(self.charset['CHARS']), '')
+        df = self.dataframe[column][index]
+        for char in self.charset['CHARS']:
+            df = df.replace(char, '')
+        return df
 
     def shortcuts_removal(self, column, index):
         return ' '.join(list(map(lambda word: self.find_and_replace(word), self.dataframe[column][index].split())))
@@ -111,10 +122,34 @@ class Feature_Engineering(object):
         return self.dataframe[column]
     
     def tfidf_vec(self, column):
-        return np.array(self.tsvd.fit_transform(self.vectorizer.fit_transform(self.dataframe[column].values)))
+        return list(self.tsvd.fit_transform(self.vectorizer.fit_transform(self.dataframe[column].values)))
     
     def dummies_encoding(self, column):
         return pd.get_dummies(self.dataframe[column])
+    
+    def bert_separators(self, column):
+        for index in range(self.dataframe[column].shape[0]):
+            self.dataframe[column][index] = self.dataframe[column][index].split('.')
             
+        return self.dataframe[column]
+    
+    def model_conf(self):
+        self.model.cpu()
+        
+    
+    def make_vectors(self, column):
+        ids = self.dataframe[column].apply(self.tokenizer.encode)
+        vectors = []
+
+        for question_title in tqdm(question_title_ids):
+            input_ids = torch.Tensor(question_title).to(torch.int64).unsqueeze(0)
+            try:
+                outputs = self.model(input_ids.cpu())
+                vectors.append(outputs[0].detach().cpu().numpy().max(axis = 1))
+
+            except:
+                vectors.append(np.zeros(outputs[0].detach().cpu().numpy().max(axis = 1)).shape)
+        
+        return vectors
 
     
