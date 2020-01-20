@@ -5,16 +5,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
+import plotly.graph_objs as go
 from matplotlib_venn import venn2
 
-import xml.etree.ElementTree as ET
-import json 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
+from sklearn.preprocessing import LabelBinarizer
 
-import torch
+import json
+import requests
+
+# import tensorflow_hub as hub
 from transformers import DistilBertTokenizer, DistilBertModel
+from tqdm import tqdm
+
+from sklearn.model_selection import KFold
+from scipy.stats import spearmanr
+from sklearn.linear_model import MultiTaskElasticNet
+import tensorflow as tf
+import torch
+from keras.callbacks import Callback
+from keras.optimizers import Adam
+from keras.models import Model
+from keras.layers import LSTM
 
 
 class Parser(object):
@@ -82,7 +96,7 @@ class Feature_Engineering(object):
     '''
     def __init__(self, dataframe):
         self.dataframe = dataframe
-        with open("src/charset.json") as json_file:
+        with open("src/charset.json", encoding="utf8") as json_file:
             self.charset  = json.load(json_file)
         
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 3))
@@ -92,6 +106,7 @@ class Feature_Engineering(object):
         self.tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
         self.model = DistilBertModel.from_pretrained('distilbert-base-uncased')
         
+        self.binarizer = LabelBinarizer()
 
 
     def unconstrained_chars(self, column, index):
@@ -124,8 +139,8 @@ class Feature_Engineering(object):
     def tfidf_vec(self, column):
         return list(self.tsvd.fit_transform(self.vectorizer.fit_transform(self.dataframe[column].values)))
     
-    def dummies_encoding(self, column):
-        return pd.get_dummies(self.dataframe[column])
+    def binarize(self, column):
+        return list(self.binarizer.fit_transform(self.dataframe[column].values))
     
     def bert_separators(self, column):
         for index in range(self.dataframe[column].shape[0]):
@@ -138,11 +153,11 @@ class Feature_Engineering(object):
         
     
     def make_vectors(self, column):
-        ids = self.dataframe[column].apply(self.tokenizer.encode)
+        ids = self.dataframe[column].str.slice(0, 500).apply(self.tokenizer.encode)
         vectors = []
 
-        for question_title in tqdm(question_title_ids):
-            input_ids = torch.Tensor(question_title).to(torch.int64).unsqueeze(0)
+        for column in tqdm(ids):
+            input_ids = torch.Tensor(column).to(torch.int64).unsqueeze(0)
             try:
                 outputs = self.model(input_ids.cpu())
                 vectors.append(outputs[0].detach().cpu().numpy().max(axis = 1))
