@@ -8,7 +8,6 @@ import plotly.express as px
 import plotly.graph_objs as go
 from matplotlib_venn import venn2
 
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import LabelBinarizer
@@ -29,22 +28,6 @@ from keras.callbacks import Callback
 from keras.optimizers import Adam
 from keras.models import Model
 from keras.layers import LSTM
-
-
-class Parser(object):
-    '''
-    Parse config.xml file.
-
-    config.xml file stores hyperparameters used by machine learning algorithms.
-
-    It allows to make changes quickly without seeking specific values in code.
-    '''
-
-    def __init__(self):
-        self.root = ET.parse('src/config.xml').getroot()
-    
-    
-#int(self.root[0][0].text)
 
 class Analysis(object):
     '''
@@ -100,7 +83,6 @@ class Feature_Engineering(object):
             self.charset  = json.load(json_file)
         
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 3))
-        # change number of compoments
         self.tsvd = TruncatedSVD(n_components = 128, n_iter=5)
         
         self.tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
@@ -151,7 +133,6 @@ class Feature_Engineering(object):
     def model_conf(self):
         self.model.cpu()
         
-    
     def make_vectors(self, column):
         ids = self.dataframe[column].str.slice(0, 500).apply(self.tokenizer.encode)
         vectors = []
@@ -167,4 +148,18 @@ class Feature_Engineering(object):
         
         return vectors
 
+class SpearmanCallback(Callback):
+    '''
+    Class for calculating and displaing Spearman Rho value
+    as a callback after each epoch.
+    '''
+    pass
+
+class Network(object):
+    '''
+    Neural network architecture class
     
+    Model consist in LSTM blocks with dense neural network 
+    with data divided by cross validation.
+    '''
+    pass
