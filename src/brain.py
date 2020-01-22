@@ -121,7 +121,10 @@ class Feature_Engineering(object):
     def tfidf_vec(self, column):
         return list(self.tsvd.fit_transform(self.vectorizer.fit_transform(self.dataframe[column].values)))
     
-    def binarize(self, column):
+    def binarize(self, column, other_df):
+        if len(self.dataframe[column].value_counts()) < len(other_df[column].value_counts()):
+            diff = abs(len(self.dataframe[column].value_counts()) - len(other_df[column].value_counts()))
+            return list(np.concatenate([list(self.binarizer.fit_transform(self.dataframe[column].values)), np.zeros((self.dataframe.shape[0], diff))], axis=1))
         return list(self.binarizer.fit_transform(self.dataframe[column].values))
     
     def bert_separators(self, column):
