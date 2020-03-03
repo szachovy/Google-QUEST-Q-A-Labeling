@@ -19,11 +19,13 @@
 (FE)___TF-IDF with SVD->(Modelling)
 (FE)___Vectorization with BERT->(Modelling)
 
-(Modelling)___Deep RNN with LSTM blocks->(Deployment)
+(Modelling)___Model BERT > LSTM->(Deployment)
+(Modelling)___Model TFIDF > DENSE->(Deployment)
+(Modelling)___Model BERT > MultiTaskElasticNet->(Deployment)
 (Modelling)___Spearman Callback->(Deployment)
 
-(Deployment)__Fitting->(Feedback)
-(Deployment)__Submission->(Feedback)
 
-(Feedback)__Metrics->(end)
-(Feedback)__Plots->(end)
+(Deployment)__Fitting->(Feedback)
+(Deployment)__Metrics->(Feedback)
+
+(Feedback)__Submission->(end)
